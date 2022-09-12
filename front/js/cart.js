@@ -53,3 +53,25 @@ function deleteItem() {
 
 deleteItem()
 
+function getTotalQuantity(){
+    
+    const totalQuantity = document.getElementById("totalQuantity")
+    const totalPrice = document.getElementById("totalPrice")
+
+    let qtyPerItem = []
+    let priceOfItem = []
+    let numberOfProduct = 0
+
+    for( let item of shoppingCart){
+        numberOfProduct += parseInt(item.quantity)
+        qtyPerItem.push(parseInt(item.quantity)) 
+        priceOfItem.push(item.price) 
+    }
+
+    const totalPriceOfCart = qtyPerItem.reduce((somme, qtyT, index) => somme + (qtyT * priceOfItem[index]), 0)
+
+    totalQuantity.innerText = numberOfProduct
+    totalPrice.innerText = totalPriceOfCart
+}
+
+getTotalQuantity()
