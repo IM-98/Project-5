@@ -54,7 +54,7 @@ function deleteItem() {
 deleteItem()
 
 function getTotalQuantity(){
-    
+
     const totalQuantity = document.getElementById("totalQuantity")
     const totalPrice = document.getElementById("totalPrice")
 
@@ -75,3 +75,31 @@ function getTotalQuantity(){
 }
 
 getTotalQuantity()
+
+
+function updateQuantityOfItem() {
+let updateQuantity = document.querySelectorAll(".itemQuantity")
+updateQuantity.forEach(element => {
+    let article = element.closest("article")
+    let id = article.dataset.id
+    let color = article.dataset.color
+    let qty = article.dataset.quantity
+    element.addEventListener( "change", (input)=> {
+        
+        for(let item of shoppingCart){
+
+            if(item.id === id && item.color === color){
+                
+                item.quantity = input.target.value
+                qty = input.target.value
+                
+                localStorage.setItem("CART", JSON.stringify(shoppingCart))
+                getTotalQuantity()
+                location.reload()
+            }
+        }
+    })
+})
+}
+
+updateQuantityOfItem()
