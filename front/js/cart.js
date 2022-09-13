@@ -103,3 +103,92 @@ updateQuantity.forEach(element => {
 }
 
 updateQuantityOfItem()
+
+
+// FORM VALIDATION
+
+
+const regExMail = /^[a-zA-Z0-9æœ.!#$%&’*+/=?^_`{|}~"(),:;<>@[\]-]+@([\w-]+\.)+[\w-]{2,4}$/i
+
+const regExLetters = /^[a-zA-ZÀ-ÿ-. ]*$/
+
+const regExLettersNumbers = /^[a-zA-ZÀ-ÿ0-9-. ]*$/
+
+let email = document.getElementById("email")
+let first = document.getElementById("firstName")
+let lastName = document.getElementById("lastName")
+let address = document.getElementById("address")
+let city = document.getElementById("city")
+let submit = document.getElementById("order")
+
+
+let firstNameError = document.getElementById("firstNameErrorMsg")
+let lastNameError = document.getElementById("lastNameErrorMsg")
+let addressError = document.getElementById("addressErrorMsg")
+let cityError = document.getElementById("cityErrorMsg")
+let emailError = document.getElementById("emailErrorMsg")
+
+
+email.addEventListener('change', checkEmail);
+first.addEventListener('change',checkFirstName )
+lastName.addEventListener('change',checkLastName)
+address.addEventListener('change',checkAddress )
+city.addEventListener('change',checkCity)
+
+
+function checkEmail(e) {
+  if(regExMail.test(e.target.value)) {
+    emailError.innerText = "adresse valide"
+        emailError.style.color = "green"
+    }
+    else {
+        emailError.innerText = "adresse non valide"
+        emailError.style.color = "red"
+    } 
+
+}
+function checkFirstName(e) {
+  if(regExLetters.test(e.target.value)) {
+    firstNameError.innerText = "adresse valide"
+    firstNameError.style.color = "green"
+    }
+    else {
+        firstNameError.innerText = "adresse non valide"
+        firstNameError.style.color = "red"
+    } 
+
+}
+function checkLastName(e) {
+  if(regExLetters.test(e.target.value)) {
+    lastNameError.innerText = "adresse valide"
+    lastNameError.style.color = "green"
+    }
+    else {
+        lastNameError.innerText = "adresse non valide"
+        lastNameError.style.color = "red"
+    } 
+
+}
+function checkCity(e) {
+  if(regExLetters.test(e.target.value)) {
+    cityError.innerText = "adresse valide"
+    cityError.style.color = "green"
+    }
+    else {
+        cityError.innerText = "adresse non valide"
+        cityError.style.color = "red"
+    } 
+
+}
+function checkAddress(e) {
+  if(regExLettersNumbers.test(e.target.value)) {
+    addressError.innerText = "adresse valide"
+    addressError.style.color = "green"
+    }
+    else {
+        addressError.innerText = "adresse non valide"
+        addressError.style.color = "red"
+    } 
+
+}
+
