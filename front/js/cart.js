@@ -1,5 +1,5 @@
 const cartDiv = document.getElementById("cart__items")
-let shoppingCart = JSON.parse(localStorage.getItem("CART"))
+let shoppingCart = JSON.parse(localStorage.getItem("CART")) || []
 
 for(let item of shoppingCart){
         
@@ -119,7 +119,7 @@ let first = document.getElementById("firstName")
 let lastName = document.getElementById("lastName")
 let address = document.getElementById("address")
 let city = document.getElementById("city")
-let submit = document.getElementById("order")
+
 
 
 let firstNameError = document.getElementById("firstNameErrorMsg")
@@ -191,4 +191,54 @@ function checkAddress(e) {
     } 
 
 }
+
+const storedCustomerInfo = JSON.parse(localStorage.getItem("Customer Info")) || [] 
+const submit = document.getElementById("order")
+submit.addEventListener('click', event => {
+    event.preventDefault()
+
+    let contact = {
+        email : email.value,
+        firstName : first.value,
+        lastName : lastName.value,
+        address : address.value,
+        city : city.value
+    }
+    
+    storedCustomerInfo.push(contact)
+    localStorage.setItem("Customer Info", JSON.stringify(storedCustomerInfo))
+
+
+    let products = []
+
+    for(item of shoppingCart){
+        products.push(item.id)
+    }
+    console.log(products)
+
+
+    const sendFormData = {
+        contact,
+        products,
+      }
+    
+      // j'envoie le formulaire + localStorage (sendFormData) 
+      // ... que j'envoie au serveur
+    
+      const options = {
+        method: 'POST',
+        body: JSON.stringify(sendFormData),
+        headers: { 
+          'Content-Type': 'application/json',
+        }
+      };
+    
+      fetch("http://localhost:3000/api/products/order", options)
+          .then(response => response.json())
+          .then(data => {
+          localStorage.setItem('orderId', data.orderId);
+          document.location.href = 'confirmation.html?id='+ data.orderId;
+        });
+})
+
 

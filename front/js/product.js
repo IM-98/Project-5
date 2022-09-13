@@ -78,6 +78,25 @@ fetch(productInfo)
                 }
 
             } 
+            else {
+
+                let productChoosen = {
+                    color :productColorsSelected,
+                    name : product.name,
+                    price : product.price,
+                    quantity : productQuantitySelected ,
+                    imageSrc : product.imageUrl,
+                    description : product.description,
+                    id : productId
+                }
+                
+                shoppingCart.push(productChoosen)
+                localStorage.setItem("CART", JSON.stringify(shoppingCart))
+            
+            
+                console.log(shoppingCart)
+    
+            }
 
         }
         else {
