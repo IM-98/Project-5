@@ -39,23 +39,46 @@ fetch(productInfo)
         const productQuantitySelected = document.getElementById("quantity").value
         const productColorsSelected = document.getElementById("colors").value
 
+
         if( productQuantitySelected >=1 && productQuantitySelected < 100 && productColorsSelected !== undefined &&  productColorsSelected !== "" ){
     
-            let productChoosen = {
-                color :productColorsSelected,
-                name : product.name,
-                price : product.price,
-                quantity : productQuantitySelected ,
-                imageSrc : product.imageUrl,
-                description : product.description,
-                id : productId
-            }
-            
-            shoppingCart.push(productChoosen)
-            localStorage.setItem("CART", JSON.stringify(shoppingCart))
+            if(localStorage.getItem("CART")){
+
+                let id = productId
+
+                const checkCart = shoppingCart.find( (element) => element.id === id && element.color === productColorsSelected)
+
+
+                if(checkCart){
+                    console.log("resultfind kanap = " + checkCart.quantity)
+
+                    let newQuantity = parseInt(productQuantitySelected) + parseInt(checkCart.quantity)
+                    checkCart.quantity = newQuantity
+                    localStorage.setItem("CART", JSON.stringify(shoppingCart))
+
+                }
+                else {
+
+                    let productChoosen = {
+                        color :productColorsSelected,
+                        name : product.name,
+                        price : product.price,
+                        quantity : productQuantitySelected ,
+                        imageSrc : product.imageUrl,
+                        description : product.description,
+                        id : productId
+                    }
+                    
+                    shoppingCart.push(productChoosen)
+                    localStorage.setItem("CART", JSON.stringify(shoppingCart))
+                
+                
+                    console.log(shoppingCart)
         
-           
-            console.log(shoppingCart)
+                }
+
+            } 
+
         }
         else {
             alert("vous devez selectionner une couleur et une quantité")
