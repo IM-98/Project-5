@@ -108,11 +108,12 @@ updateQuantityOfItem()
 // FORM VALIDATION
 
 
+
 const regExMail = /^[a-zA-Z0-9æœ.!#$%&’*+/=?^_`{|}~"(),:;<>@[\]-]+@([\w-]+\.)+[\w-]{2,4}$/i
 
 const regExLetters = /^[a-zA-ZÀ-ÿ-. ]*$/
 
-const regExLettersNumbers = /^[a-zA-ZÀ-ÿ0-9-. ]*$/
+const regExLettersNumbers = /^[a-zA-ZÀ-ÿ0-9-. ]*$/  
 
 let email = document.getElementById("email")
 let first = document.getElementById("firstName")
@@ -120,125 +121,115 @@ let lastName = document.getElementById("lastName")
 let address = document.getElementById("address")
 let city = document.getElementById("city")
 
+city.classList.add("regExLetters")
+first.classList.add("regExLetters")
+lastName.classList.add("regExLetters")
 
-
-let firstNameError = document.getElementById("firstNameErrorMsg")
-let lastNameError = document.getElementById("lastNameErrorMsg")
 let addressError = document.getElementById("addressErrorMsg")
-let cityError = document.getElementById("cityErrorMsg")
 let emailError = document.getElementById("emailErrorMsg")
+const wrongInput = "champ incorrecte"
 
-
-email.addEventListener('change', checkEmail);
-first.addEventListener('change',checkFirstName )
-lastName.addEventListener('change',checkLastName)
-address.addEventListener('change',checkAddress )
-city.addEventListener('change',checkCity)
+email.addEventListener('change', checkEmail)
+address.addEventListener('change',checkAddress)
 
 
 function checkEmail(e) {
-  if(regExMail.test(e.target.value)) {
-    emailError.innerText = "adresse valide"
-        emailError.style.color = "green"
-    }
-    else {
-        emailError.innerText = "adresse non valide"
-        emailError.style.color = "red"
-    } 
-
+    if(regExMail.test(e.target.value)) {
+        emailError.innerText = ""
+      }
+      else {
+          emailError.innerText = wrongInput
+          emailError.style.color = "red"
+      } 
+  
 }
-function checkFirstName(e) {
-  if(regExLetters.test(e.target.value)) {
-    firstNameError.innerText = "adresse valide"
-    firstNameError.style.color = "green"
-    }
-    else {
-        firstNameError.innerText = "adresse non valide"
-        firstNameError.style.color = "red"
-    } 
 
-}
-function checkLastName(e) {
-  if(regExLetters.test(e.target.value)) {
-    lastNameError.innerText = "adresse valide"
-    lastNameError.style.color = "green"
-    }
-    else {
-        lastNameError.innerText = "adresse non valide"
-        lastNameError.style.color = "red"
-    } 
+const checkLetters = document.querySelectorAll(".regExLetters")
 
-}
-function checkCity(e) {
-  if(regExLetters.test(e.target.value)) {
-    cityError.innerText = "adresse valide"
-    cityError.style.color = "green"
-    }
-    else {
-        cityError.innerText = "adresse non valide"
-        cityError.style.color = "red"
-    } 
+checkLetters.forEach((element)=>{
 
-}
+
+    element.addEventListener("change",(e) => {
+        let errorMsg = e.target.nextElementSibling
+        if(regExLetters.test(e.target.value)) {
+            errorMsg.innerText = ""
+        }
+        else {
+            errorMsg.innerText = wrongInput
+            errorMsg.style.color = "red"
+        } 
+    })
+
+})
+
+
+
 function checkAddress(e) {
-  if(regExLettersNumbers.test(e.target.value)) {
-    addressError.innerText = "adresse valide"
-    addressError.style.color = "green"
-    }
-    else {
-        addressError.innerText = "adresse non valide"
-        addressError.style.color = "red"
-    } 
-
+    if(regExLettersNumbers.test(e.target.value)) {
+        addressError.innerText = ""
+      }
+      else {
+          addressError.innerText = wrongInput
+          addressError.style.color = "red"
+      } 
+  
 }
+
+console.log(shoppingCart)
+
 
 const storedCustomerInfo = JSON.parse(localStorage.getItem("Customer Info")) || [] 
 const submit = document.getElementById("order")
 submit.addEventListener('click', event => {
     event.preventDefault()
-
-    let contact = {
-        email : email.value,
-        firstName : first.value,
-        lastName : lastName.value,
-        address : address.value,
-        city : city.value
-    }
+    if (shoppingCart = []) {
+        alert("Pour passer commande, veuillez ajouter des produits à votre panier");
+        
+    } else if (first.value === "" || lastName.value === "" || address.value === "" || city.value === "" || email.value === "") {
+        alert("Vous devez renseigner vos coordonnées pour passer la commande !");
     
-    storedCustomerInfo.push(contact)
-    localStorage.setItem("Customer Info", JSON.stringify(storedCustomerInfo))
-
-
-    let products = []
-
-    for(item of shoppingCart){
-        products.push(item.id)
-    }
-    console.log(products)
-
-
-    const sendFormData = {
-        contact,
-        products,
-      }
-    
-      // j'envoie le formulaire + localStorage (sendFormData) 
-      // ... que j'envoie au serveur
-    
-      const options = {
-        method: 'POST',
-        body: JSON.stringify(sendFormData),
-        headers: { 
-          'Content-Type': 'application/json',
+    } else if (regExLetters.test(first.value) ==  false || regExLetters.test(lastName.value) ==  false || regExLettersNumbers.test(address.value) ==  false || regExLetters.test(city.value) ==  false || regExMail.test(email.value) ==  false) {
+        alert("Vérifiez vos coordonnées pour passer commande !");
+        
+    } else {
+        let contact = {
+            email : email.value,
+            firstName : first.value,
+            lastName : lastName.value,
+            address : address.value,
+            city : city.value
         }
-      };
+        
+        storedCustomerInfo.push(contact)
+        localStorage.setItem("Customer Info", JSON.stringify(storedCustomerInfo))
+
+        let products = []
+
+        for(item of shoppingCart){
+            products.push(item.id)
+        }
+
+        const sendFormData = {
+            contact,
+            products,
+        }
     
-      fetch("http://localhost:3000/api/products/order", options)
-          .then(response => response.json())
-          .then(data => {
-          localStorage.setItem('orderId', data.orderId);
-          document.location.href = 'confirmation.html?id='+ data.orderId;
-        });
+        const options = {
+            method: 'POST',
+            body: JSON.stringify(sendFormData),
+            headers: { 
+            'Content-Type': 'application/json',
+            }
+        }
+    
+        fetch("http://localhost:3000/api/products/order", options)
+            .then(response => response.json())
+            .then(data => {
+            localStorage.setItem('orderId', data.orderId);
+            document.location.href = 'confirmation.html?id='+ data.orderId;
+            })
+    }
 })
+
 
 
