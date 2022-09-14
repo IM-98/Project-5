@@ -34,75 +34,66 @@ fetch(productInfo)
     
     addProduct.addEventListener("click",  e => addToCart())
 
-    function addToCart() {
-
-        const productQuantitySelected = document.getElementById("quantity").value
-        const productColorsSelected = document.getElementById("colors").value
-
-
-        if( productQuantitySelected >=1 && productQuantitySelected < 100 && productColorsSelected !== undefined &&  productColorsSelected !== "" ){
     
-            if(localStorage.getItem("CART")){
+function newProduct() {
+    const productQuantitySelected = document.getElementById("quantity").value
+    const productColorsSelected = document.getElementById("colors").value
 
-                let id = productId
+    
+    let productChoosen = {
+        color :productColorsSelected,
+        name : product.name,
+        price : product.price,
+        quantity : productQuantitySelected ,
+        imageSrc : product.imageUrl,
+        description : product.description,
+        id : productId
+    }
+    
+    shoppingCart.push(productChoosen)
+    localStorage.setItem("CART", JSON.stringify(shoppingCart))
 
-                const checkCart = shoppingCart.find( (element) => element.id === id && element.color === productColorsSelected)
+
+    console.log(shoppingCart)
+}
+
+function addToCart() {
+
+    const productQuantitySelected = document.getElementById("quantity").value
+    const productColorsSelected = document.getElementById("colors").value
 
 
-                if(checkCart){
-                    console.log("resultfind kanap = " + checkCart.quantity)
+    if( productQuantitySelected >=1 && productQuantitySelected < 100 && productColorsSelected !== undefined &&  productColorsSelected !== "" ){
 
-                    let newQuantity = parseInt(productQuantitySelected) + parseInt(checkCart.quantity)
-                    checkCart.quantity = newQuantity
-                    localStorage.setItem("CART", JSON.stringify(shoppingCart))
+        if(localStorage.getItem("CART")){
 
-                }
-                else {
+            let id = productId
 
-                    let productChoosen = {
-                        color :productColorsSelected,
-                        name : product.name,
-                        price : product.price,
-                        quantity : productQuantitySelected ,
-                        imageSrc : product.imageUrl,
-                        description : product.description,
-                        id : productId
-                    }
-                    
-                    shoppingCart.push(productChoosen)
-                    localStorage.setItem("CART", JSON.stringify(shoppingCart))
-                
-                
-                    console.log(shoppingCart)
-        
-                }
+            const checkCart = shoppingCart.find( (element) => element.id === id && element.color === productColorsSelected)
 
-            } 
-            else {
 
-                let productChoosen = {
-                    color :productColorsSelected,
-                    name : product.name,
-                    price : product.price,
-                    quantity : productQuantitySelected ,
-                    imageSrc : product.imageUrl,
-                    description : product.description,
-                    id : productId
-                }
-                
-                shoppingCart.push(productChoosen)
+            if(checkCart){
+                console.log("resultfind kanap = " + checkCart.quantity)
+
+                let newQuantity = parseInt(productQuantitySelected) + parseInt(checkCart.quantity)
+                checkCart.quantity = newQuantity
                 localStorage.setItem("CART", JSON.stringify(shoppingCart))
-            
-            
-                console.log(shoppingCart)
-    
+
+            }
+            else {
+                newProduct()
             }
 
-        }
+        } 
         else {
-            alert("vous devez selectionner une couleur et une quantité")
-        
+           newProduct()
         }
+
     }
+    else {
+        alert("vous devez selectionner une couleur et une quantité")
+    
+    }
+}
 
 })
