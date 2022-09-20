@@ -182,7 +182,7 @@ const storedCustomerInfo = JSON.parse(localStorage.getItem("Customer Info")) || 
 const submit = document.getElementById("order")
 submit.addEventListener('click', event => {
     event.preventDefault()
-    if (shoppingCart = []) {
+    if (shoppingCart == "") {
         alert("Pour passer commande, veuillez ajouter des produits à votre panier");
         
     } else if (first.value === "" || lastName.value === "" || address.value === "" || city.value === "" || email.value === "") {
