@@ -148,7 +148,7 @@ function updateQuantityOfItem() {
                     // mise à jour du local storage
                     localStorage.setItem("CART", JSON.stringify(shoppingCart))
                     //appel de la fonction getTotalPrice pour mettre à jour le total
-                    getTotPrice()
+                    getTotalPrice()
                     location.reload()
                 }
             }
