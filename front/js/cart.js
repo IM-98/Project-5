@@ -1,6 +1,7 @@
-const API = "http://localhost:3000/api/products"
 let shoppingCart = JSON.parse(localStorage.getItem("CART")) || []
+const API = "http://localhost:3000/api/products"
 
+// requete GET au backend qui nous renvoit la data des produits
 async function getData() {
     const response = await fetch(API);
   
@@ -8,66 +9,6 @@ async function getData() {
 
     return data
 }
-  
-
-
-
-
-async function getPrice(){
-    // requete GET à l'api pour obtenir les infos sur les produits
-     let data = await getData()  
-        let dataOfCart = []
-        for(i=0; i<data.length; i++){
-            for(let item of shoppingCart){
-                // on récupère puis affiche le prix des articles du panier grâce à leur id
-                if(item.id === data[i]._id){ 
-                    dataOfCart.push(data[i])
-                }
-            }
-        }
-        const itemPrice = document.querySelectorAll(".itemPrice")
-        for(i=0; i<itemPrice.length; i++){
-            let id = itemPrice[i].closest("article").dataset.id
-            if(id === dataOfCart[i]._id){
-                itemPrice[i].innerText = dataOfCart[i].price + " €"
-            }
-        }
-}
-
-getPrice()
-
-async function getTotPrice(){
-    // on fait un appel à l'api pour avoir toutes les infos des produits
-    let data = await getData() 
-
-        // ondéclare des variables qui vont nous servir à stocker la data utile pour calculer le total
-            let priceOfItem = []
-            let qtyPerItem = []
-            let numberOfProduct = 0
-    
-        // on récupère le prix de chaque article présent dans le panier grâce aux IDs présent dans le panier
-            for(i=0; i<data.length; i++){
-                for(let item of shoppingCart){
-                    if(item.id === data[i]._id){
-                        priceOfItem.push(data[i].price)
-                    }
-                }
-            }
-            //on incrémente le nombre total de produit et on récupère la quantité par article qu'on ajoute dans le tableau qtyPerItem
-            for(let item of shoppingCart){
-            numberOfProduct += parseInt(item.quantity)
-            qtyPerItem.push(parseInt(item.quantity)) 
-            }
-        
-            // on multiplie les tableaux qtyPerItem et priceOfItem puis additionne le résultat pour obtenir le prix total , grâce à la méthode .reduce()
-            const totalPriceOfCart = qtyPerItem.reduce((somme, qtyT, index) => somme + (qtyT * priceOfItem[index]), 0)
-    
-            totalQuantity.innerText = numberOfProduct
-            totalPrice.innerText = totalPriceOfCart
-    }
-
-
-
 
 const cartDiv = document.getElementById("cart__items")
 
@@ -100,38 +41,67 @@ for(let item of shoppingCart){
         
 }
 
+// fonction qui permet d'afficher le prix en provenance du backend
 
-// fonction qui permet d'insérer le prix pour chaque article
+async function getPrice(){
 
-// async function getPrice(){
-//     // requete GET à l'api pour obtenir les infos sur les produits
-//     fetch(API)
-//     .then(res => res.json())
-//     .then(data => {
-         
-//         let dataOfCart = []
-//         for(i=0; i<data.length; i++){
-//             for(let item of shoppingCart){
-//                 // on récupère puis affiche le prix des articles du panier grâce à leur id
-//                 if(item.id === data[i]._id){ 
-//                     dataOfCart.push(data[i])
-//                 }
-//             }
-//         }
-//         const itemPrice = document.querySelectorAll(".itemPrice")
-//         for(i=0; i<itemPrice.length; i++){
-//             let id = itemPrice[i].closest("article").dataset.id
-//             if(id === dataOfCart[i]._id){
-//                 itemPrice[i].innerText = dataOfCart[i].price + " €"
-//             }
-//         }
+    //récupération de la réponse du backend
+     let data = await getData()  
+        let dataOfCart = []
 
-//     })
-// }
+        for(i=0; i<data.length; i++){
+            for(let item of shoppingCart){
+                // on récupère uniquement les infos sur les articles présent dans le panier dans dataOfCart
+                if(item.id === data[i]._id){ 
+                    dataOfCart.push(data[i])
+                }
+            }
+        }
+        // on affiche le prix de chaque article grâce à son id
+        const itemPrice = document.querySelectorAll(".itemPrice")
+        for(i=0; i<itemPrice.length; i++){
+            let id = itemPrice[i].closest("article").dataset.id
+            if(id === dataOfCart[i]._id){
+                itemPrice[i].innerText = dataOfCart[i].price + " €"
+            }
+        }
+}
 
-// getPrice()
+getPrice()
 
-// fonction qui permet de supprimer un article du panier
+// fonction qui permet de calculer le prix total du panier et le nombre total d'article
+
+async function getTotalPrice(){
+    let data = await getData() 
+
+        // délclaration des variables qui vont nous servir à stocker la data utile pour calculer le total
+            let priceOfItem = []
+            let qtyPerItem = []
+            let numberOfProduct = 0
+    
+        // on récupère le prix de chaque article dans le panier grâce aux IDs 
+            for(i=0; i<data.length; i++){
+                for(let item of shoppingCart){
+                    if(item.id === data[i]._id){
+                        priceOfItem.push(data[i].price)
+                    }
+                }
+            }
+            //on incrémente le nombre total de produit et on récupère la quantité par article dans le tableau qtyPerItem
+            for(let item of shoppingCart){
+            numberOfProduct += parseInt(item.quantity)
+            qtyPerItem.push(parseInt(item.quantity)) 
+            }
+        
+            // on multiplie les tableaux qtyPerItem et priceOfItem puis additionne le résultat pour obtenir le prix total , grâce à la méthode .reduce()
+            const totalPriceOfCart = qtyPerItem.reduce((somme, qtyT, index) => somme + (qtyT * priceOfItem[index]), 0)
+    
+            totalQuantity.innerText = numberOfProduct
+            totalPrice.innerText = totalPriceOfCart
+}
+getTotalPrice()
+
+// fonction suppression d'un article 
 
 function deleteItem() {
 
@@ -142,7 +112,7 @@ function deleteItem() {
         let color = article.dataset.color;
         target.addEventListener("click" , () => {
 
-            //Selection de l'element à supprimer en fonction de son id ET sa couleur
+            //Selection de l'element à supprimer grace à la méthode filter
             shoppingCart = shoppingCart.filter((element) => element.id !== id || element.color !== color );
 
             // mise à jour du localstorage
@@ -157,46 +127,10 @@ function deleteItem() {
 
 deleteItem()
 
-// fonction qui permet d'afficher le nombre total d'articles et le prix total du panier
-
-// async function getTotPrice(){
-// // on fait un appel à l'api pour avoir toutes les infos des produits
-//     fetch(API)
-//     .then(res => res.json())
-//     .then(data => {
-//     // ondéclare des variables qui vont nous servir à stocker la data utile pour calculer le total
-//         let priceOfItem = []
-//         let qtyPerItem = []
-//         let numberOfProduct = 0
-
-//     // on récupère le prix de chaque article présent dans le panier grâce aux IDs présent dans le panier
-//         for(i=0; i<data.length; i++){
-//             for(let item of shoppingCart){
-//                 if(item.id === data[i]._id){
-//                     priceOfItem.push(data[i].price)
-//                 }
-//             }
-//         }
-//         //on incrémente le nombre total de produit et on récupère la quantité par article qu'on ajoute dans le tableau qtyPerItem
-//         for(let item of shoppingCart){
-//         numberOfProduct += parseInt(item.quantity)
-//         qtyPerItem.push(parseInt(item.quantity)) 
-//         }
-    
-//         // on multiplie les tableaux qtyPerItem et priceOfItem puis additionne le résultat pour obtenir le prix total , grâce à la méthode .reduce()
-//         const totalPriceOfCart = qtyPerItem.reduce((somme, qtyT, index) => somme + (qtyT * priceOfItem[index]), 0)
-
-//         totalQuantity.innerText = numberOfProduct
-//         totalPrice.innerText = totalPriceOfCart
-//     })
-// }
-
-getTotPrice()
-
-// fonction qui met à jour la quantité d'un article dans le panier et ensuite le prix total du panier
+// fonction mise à jour de la quantité d'un produit + mise à jour du total
 
 function updateQuantityOfItem() {
-// on applique un addEventListener sur chaque input de quantité 
+// ajout d'un EventListener sur chaque input de quantité 
     let updateQuantity = document.querySelectorAll(".itemQuantity")
     updateQuantity.forEach(element => {
         let article = element.closest("article")
@@ -206,14 +140,14 @@ function updateQuantityOfItem() {
         element.addEventListener( "change", (input)=> {
             
             for(let item of shoppingCart){
-                //si le produit dont la quantité a été modifié est similaire au produit présent dans le panier on incrémente sa quantité
+                //actualisation de la quantité du produit grâce à la valeur de l'input
                 if(item.id === id && item.color === color){
                     
                     item.quantity = input.target.value
                     qty = input.target.value
-                    // on met à jour le local storage
+                    // mise à jour du local storage
                     localStorage.setItem("CART", JSON.stringify(shoppingCart))
-                    // on appel la fonction getTotalPrice pour afficher le total panier à jour
+                    //appel de la fonction getTotalPrice pour mettre à jour le total
                     getTotPrice()
                     location.reload()
                 }
@@ -300,8 +234,10 @@ function checkAddress(e) {
 console.log(shoppingCart)
 
 
+// création d'un tableau customer info dans le local storage
 const storedCustomerInfo = JSON.parse(localStorage.getItem("Customer Info")) || [] 
 const submit = document.getElementById("order")
+
 submit.addEventListener('click', event => {
     event.preventDefault()
     if (shoppingCart == "") {
@@ -314,6 +250,7 @@ submit.addEventListener('click', event => {
         alert("Vérifiez vos coordonnées pour passer commande !");
         
     } else {
+        // création d'un objet contact qui contient les coordonnées du client
         let contact = {
             email : email.value,
             firstName : first.value,
@@ -321,16 +258,18 @@ submit.addEventListener('click', event => {
             address : address.value,
             city : city.value
         }
-        
+        // envoi de l'objet contact dans le local storage puis on met à jour
         storedCustomerInfo.push(contact)
         localStorage.setItem("Customer Info", JSON.stringify(storedCustomerInfo))
 
+        // récupération des ids des produits commandés
         let products = []
 
         for(item of shoppingCart){
             products.push(item.id)
         }
 
+        // création d'un objet coordonnées + id des produits à envoyer au backend
         const sendFormData = {
             contact,
             products,
@@ -343,6 +282,8 @@ submit.addEventListener('click', event => {
             'Content-Type': 'application/json',
             }
         }
+        
+        //envoi de la commande au backend avec POST qui nous retourne un order ID + redirection du client vers la page confirmation
     
         fetch("http://localhost:3000/api/products/order", options)
             .then(response => response.json())
