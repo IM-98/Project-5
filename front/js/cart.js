@@ -1,6 +1,75 @@
-const cartDiv = document.getElementById("cart__items")
 const API = "http://localhost:3000/api/products"
 let shoppingCart = JSON.parse(localStorage.getItem("CART")) || []
+
+async function getData() {
+    const response = await fetch(API);
+  
+    const data =  response.json();
+
+    return data
+}
+  
+
+
+
+
+async function getPrice(){
+    // requete GET à l'api pour obtenir les infos sur les produits
+     let data = await getData()  
+        let dataOfCart = []
+        for(i=0; i<data.length; i++){
+            for(let item of shoppingCart){
+                // on récupère puis affiche le prix des articles du panier grâce à leur id
+                if(item.id === data[i]._id){ 
+                    dataOfCart.push(data[i])
+                }
+            }
+        }
+        const itemPrice = document.querySelectorAll(".itemPrice")
+        for(i=0; i<itemPrice.length; i++){
+            let id = itemPrice[i].closest("article").dataset.id
+            if(id === dataOfCart[i]._id){
+                itemPrice[i].innerText = dataOfCart[i].price + " €"
+            }
+        }
+}
+
+getPrice()
+
+async function getTotPrice(){
+    // on fait un appel à l'api pour avoir toutes les infos des produits
+    let data = await getData() 
+
+        // ondéclare des variables qui vont nous servir à stocker la data utile pour calculer le total
+            let priceOfItem = []
+            let qtyPerItem = []
+            let numberOfProduct = 0
+    
+        // on récupère le prix de chaque article présent dans le panier grâce aux IDs présent dans le panier
+            for(i=0; i<data.length; i++){
+                for(let item of shoppingCart){
+                    if(item.id === data[i]._id){
+                        priceOfItem.push(data[i].price)
+                    }
+                }
+            }
+            //on incrémente le nombre total de produit et on récupère la quantité par article qu'on ajoute dans le tableau qtyPerItem
+            for(let item of shoppingCart){
+            numberOfProduct += parseInt(item.quantity)
+            qtyPerItem.push(parseInt(item.quantity)) 
+            }
+        
+            // on multiplie les tableaux qtyPerItem et priceOfItem puis additionne le résultat pour obtenir le prix total , grâce à la méthode .reduce()
+            const totalPriceOfCart = qtyPerItem.reduce((somme, qtyT, index) => somme + (qtyT * priceOfItem[index]), 0)
+    
+            totalQuantity.innerText = numberOfProduct
+            totalPrice.innerText = totalPriceOfCart
+    }
+
+
+
+
+const cartDiv = document.getElementById("cart__items")
 
 // on itère à travers le panier stocké dans le local storage pour créer les élements HTML nécessaire à l'affichage des produits
 
@@ -34,27 +103,33 @@ for(let item of shoppingCart){
 
 // fonction qui permet d'insérer le prix pour chaque article
 
-async function getPrice(){
-    // requete GET à l'api pour obtenir les infos sur les produits
-    fetch(API)
-    .then(res => res.json())
-    .then(data => {
-        
-        for(i=0; i<data.length; i++){
-            for(let item of shoppingCart){
-                // on récupère puis affiche le prix des articles du panier grâce à leur id
-                if(item.id === data[i]._id){
-                    let priceItem =  data[i].price
-                    const itemPrice = document.querySelectorAll(".itemPrice")
-                    itemPrice.forEach(element => element.innerText = priceItem + "€")
-                }
-            }
-        }
-    
-    })
-}
+// async function getPrice(){
+//     // requete GET à l'api pour obtenir les infos sur les produits
+//     fetch(API)
+//     .then(res => res.json())
+//     .then(data => {
+         
+//         let dataOfCart = []
+//         for(i=0; i<data.length; i++){
+//             for(let item of shoppingCart){
+//                 // on récupère puis affiche le prix des articles du panier grâce à leur id
+//                 if(item.id === data[i]._id){ 
+//                     dataOfCart.push(data[i])
+//                 }
+//             }
+//         }
+//         const itemPrice = document.querySelectorAll(".itemPrice")
+//         for(i=0; i<itemPrice.length; i++){
+//             let id = itemPrice[i].closest("article").dataset.id
+//             if(id === dataOfCart[i]._id){
+//                 itemPrice[i].innerText = dataOfCart[i].price + " €"
+//             }
+//         }
 
-getPrice()
+//     })
+// }
+
+// getPrice()
 
 // fonction qui permet de supprimer un article du panier
 
@@ -84,37 +159,37 @@ deleteItem()
 
 // fonction qui permet d'afficher le nombre total d'articles et le prix total du panier
 
-async function getTotPrice(){
-// on fait un appel à l'api pour avoir toutes les infos des produits
-    fetch(API)
-    .then(res => res.json())
-    .then(data => {
-    // ondéclare des variables qui vont nous servir à stocker la data utile pour calculer le total
-        let priceOfItem = []
-        let qtyPerItem = []
-        let numberOfProduct = 0
+// async function getTotPrice(){
+// // on fait un appel à l'api pour avoir toutes les infos des produits
+//     fetch(API)
+//     .then(res => res.json())
+//     .then(data => {
+//     // ondéclare des variables qui vont nous servir à stocker la data utile pour calculer le total
+//         let priceOfItem = []
+//         let qtyPerItem = []
+//         let numberOfProduct = 0
 
-    // on récupère le prix de chaque article présent dans le panier grâce aux IDs présent dans le panier
-        for(i=0; i<data.length; i++){
-            for(let item of shoppingCart){
-                if(item.id === data[i]._id){
-                    priceOfItem.push(data[i].price)
-                }
-            }
-        }
-        //on incrémente le nombre total de produit et on récupère la quantité par article qu'on ajoute dans le tableau qtyPerItem
-        for(let item of shoppingCart){
-        numberOfProduct += parseInt(item.quantity)
-        qtyPerItem.push(parseInt(item.quantity)) 
-        }
+//     // on récupère le prix de chaque article présent dans le panier grâce aux IDs présent dans le panier
+//         for(i=0; i<data.length; i++){
+//             for(let item of shoppingCart){
+//                 if(item.id === data[i]._id){
+//                     priceOfItem.push(data[i].price)
+//                 }
+//             }
+//         }
+//         //on incrémente le nombre total de produit et on récupère la quantité par article qu'on ajoute dans le tableau qtyPerItem
+//         for(let item of shoppingCart){
+//         numberOfProduct += parseInt(item.quantity)
+//         qtyPerItem.push(parseInt(item.quantity)) 
+//         }
     
-        // on multiplie les tableaux qtyPerItem et priceOfItem puis additionne le résultat pour obtenir le prix total , grâce à la méthode .reduce()
-        const totalPriceOfCart = qtyPerItem.reduce((somme, qtyT, index) => somme + (qtyT * priceOfItem[index]), 0)
+//         // on multiplie les tableaux qtyPerItem et priceOfItem puis additionne le résultat pour obtenir le prix total , grâce à la méthode .reduce()
+//         const totalPriceOfCart = qtyPerItem.reduce((somme, qtyT, index) => somme + (qtyT * priceOfItem[index]), 0)
 
-        totalQuantity.innerText = numberOfProduct
-        totalPrice.innerText = totalPriceOfCart
-    })
-}
+//         totalQuantity.innerText = numberOfProduct
+//         totalPrice.innerText = totalPriceOfCart
+//     })
+// }
 
 getTotPrice()
 
