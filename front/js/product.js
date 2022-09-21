@@ -43,7 +43,6 @@ function newProduct() {
     let productChoosen = {
         color :productColorsSelected,
         name : product.name,
-        price : product.price,
         quantity : productQuantitySelected ,
         imageSrc : product.imageUrl,
         description : product.description,
